@@ -16,44 +16,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.security.test.web.servlet.setup.*;
 
 @WebMvcTest
-public class BeerControllerIT {
-
-    @Autowired
-    WebApplicationContext wac;
-
-    MockMvc mockMvc;
-
-    @MockBean
-    BeerRepository beerRepository;
-
-    @MockBean
-    BeerInventoryRepository beerInventoryRepository;
-
-    @MockBean
-    BreweryService breweryService;
-
-    @MockBean
-    CustomerRepository customerRepository;
-
-    @MockBean
-    BeerService beerService;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(wac)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
-    }
+public class BeerControllerIT extends BaseIT{
 
     @WithMockUser("spring")
     @Test
-    void findBeers() throws Exception {
+    void findBeers_whenPassingSpecificUser() throws Exception {
         mockMvc.perform(get("/beers/find"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
@@ -61,8 +34,16 @@ public class BeerControllerIT {
     }
 
     @Test
-    void findBeersWithHttpBasic() throws Exception {
+    void findBeers_WhenHttpBasic() throws Exception {
         mockMvc.perform(get("/beers/find").with(httpBasic("spring","guru")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/findBeers"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void findBeers_whenUserIsAnonymous() throws Exception{
+        mockMvc.perform(get("/beers/find").with(anonymous()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
