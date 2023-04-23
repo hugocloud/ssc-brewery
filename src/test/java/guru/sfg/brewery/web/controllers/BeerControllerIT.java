@@ -35,7 +35,8 @@ public class BeerControllerIT extends BaseIT{
 
     @Test
     void findBeers_WhenHttpBasic() throws Exception {
-        mockMvc.perform(get("/beers/find").with(httpBasic("spring","guru")))
+        mockMvc.perform(get("/beers/find")
+                .with(httpBasic("spring","guru")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
@@ -51,7 +52,8 @@ public class BeerControllerIT extends BaseIT{
 
     @Test
     void createNewBeer_whenBasicAuthentication() throws Exception{
-        mockMvc.perform(get("/beers/new").with(httpBasic("user","password")))
+        mockMvc.perform(get("/beers/new")
+                .with(httpBasic("user","password")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
@@ -59,7 +61,17 @@ public class BeerControllerIT extends BaseIT{
 
     @Test
     void createNewBeer_whenBasicAuthentication_usingScottUser() throws Exception{
-        mockMvc.perform(get("/beers/new").with(httpBasic("scott","tiger")))
+        mockMvc.perform(get("/beers/new")
+                .with(httpBasic("scott","tiger")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/createBeer"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void createNewBeer_whenBasicAuthentication_usingHugoUser() throws Exception{
+        mockMvc.perform(get("/beers/new")
+                .with(httpBasic("hugo","polaris")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
